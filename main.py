@@ -53,6 +53,19 @@ if __name__ == '__main__':
         extensions = ",".join("."+each for each in extensions.split(","))
         fp.write(Dest+":"+extensions+"\n")
         fp.close()
+    elif arg == "--rewind":
+        print "Rewinding the previous sweepings\n"
+        fp = open("rewind.txt", "r")
+        lines = fp.readlines()
+        if len(lines) == 0:
+            print "No previous sweepings found"
+        for each_line in lines:
+            split = each_line.replace("\n","").split("$$$")
+            shutil.move(split[1], split[0])
+            print "Rewinding the sweeping "+split[1] +" to "+split[0]
+        fp.close()
+        open("rewind.txt","w").close()
+        print "Done"
     else:
         if len(arg) == 0:
             print "Cleaning directory not mentioned, choosing the default directory : " + to_be_cleaned +"\n"
@@ -69,7 +82,11 @@ if __name__ == '__main__':
         c = cleaner()
         for location,formats in Formats.items():
             c.add_formats(location,formats)
-        c.clean(to_be_cleaned)
+        moved = c.clean(to_be_cleaned)
+        fp = open("rewind.txt", "w")
+        for each in moved:
+            fp.write(each[0]+"$$$"+each[1]+"\n")
+        fp.close()
         print "Done"
     
 
