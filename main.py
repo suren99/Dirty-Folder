@@ -1,14 +1,9 @@
 import os
 import shutil
-
-
-Formats = {"/Users/suren/Movies/" : [".webm",".mkv",".flv",".vob",".ogv",".ogg",".drc",".gif","gifv",".mng",".avi",".mov",".qt",".wmv",".yuv",".rm",".rmvb",".asf",".amv",".mp4",".m4p",".m4v",".mpg",".mp2",".mpeg",".mpe",".mpv",".mpg",".mpeg",".m2v",".m4v",".svi",".3gp",".3g2",".mxf",".roq",".nsv",".flv",".f4v",".f4p",".f4a",".f4b"],
-       "/Users/suren/Songs/"   : [".mp3",".3gp",".aa",".aac",".aax",".act",".aiff",".amr",".ape",".au",".awb",".dct",".dss",".dvf",".flac",".gsm","iklax",".ivs",".m4a",".m4p",".mmf",".mp3",".mpc",".msv",".off",".oga",".mogg",".opus",".ra",".rm","sln",".tta","vox",".wma",".webm",".8svx"],
-       "/Users/suren/Torrents/" : [".torrent"],
-       "/Users/suren/Pictures/" : [".tif",".jpg",".png"]
-}
+import sys
 
 to_be_cleaned = "/Users/suren/Downloads/"
+Formats = {}
 
 class cleaner:
     def __init__(self):
@@ -22,20 +17,60 @@ class cleaner:
                 self.table[each_format] = location
 
     def clean(self,source_dir):
+        moved = []
         for (dirpath, dirnames, filenames) in os.walk(source_dir):
             for filename in filenames:
-                fname, extension = os.path.splitext(filename);
-                if extension.lower() in self.table:
-                    shutil.move(dirpath+"/"+filename, self.table[extension.lower()]+"/"+filename)
-                elif extension.upper() in self.table:
-                    shutil.move(dirpath+"/"+filename, self.table[extension.upper()]+"/"+filename)
-
+                fname, extension = os.path.splitext(filename)
+                lower = extension.lower() in self.table
+                upper = extension.upper() in self.table
+                src = dirpath+"/"+filename
+                if lower : dstl = self.table[extension.lower()]+"/"+filename
+                if upper : dstu = self.table[extension.upper()]+"/"+filename
+                if (upper or lower) and not os.path.exists(self.table[extension.lower()]):
+                    os.makedirs(self.table[extension.lower()])
+                if lower:
+                    shutil.move(src, dstl)
+                    moved.append((src,dstl))
+                    print "Sweeping from " +src+" to "+dstl
+                elif upper:
+                    shutil.move(src, dstu)
+                    moved.append((src,dstu))
+                    print "Sweeping from " +src+" to  "+ dstu
+        return moved
 
 if __name__ == '__main__':
-    c = cleaner()
-    for location,formats in Formats.items():
-        c.add_formats(location,formats)
-    c.clean(to_be_cleaned)
+    arg = ""
+    if len(sys.argv) > 1:
+        arg = sys.argv[1]
+    if arg == "--add":
+        print "Input the extensions separated by commas: "
+        extensions = raw_input()
+        print "Input the Destionation folder(Absolute path):"
+        Dest = raw_input()
+        if Dest[len(Dest)-1] != '/':
+            Dest += "/"
+        fp = open("map.txt","a")
+        extensions = ",".join("."+each for each in extensions.split(","))
+        fp.write(Dest+":"+extensions+"\n")
+        fp.close()
+    else:
+        if len(arg) == 0:
+            print "Cleaning directory not mentioned, choosing the default directory : " + to_be_cleaned +"\n"
+        else:
+            to_be_cleaned = arg
+            print "Cleaning up the directory : "+to_be_cleaned+"\n"
+        fp = open("map.txt", "r")
+        for each_line in fp.readlines():
+            dir_ext = each_line.split(":")
+            if len(dir_ext) != 2:
+                continue
+            Formats[dir_ext[0]] = dir_ext[1].replace("\n","").split(",")
+        fp.close()
+        c = cleaner()
+        for location,formats in Formats.items():
+            c.add_formats(location,formats)
+        c.clean(to_be_cleaned)
+        print "Done"
     
 
 
