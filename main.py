@@ -26,13 +26,15 @@ class cleaner:
                 src = dirpath+"/"+filename
                 if lower : dstl = self.table[extension.lower()]+"/"+filename
                 if upper : dstu = self.table[extension.upper()]+"/"+filename
-                if (upper or lower) and not os.path.exists(self.table[extension.lower()]):
-                    os.makedirs(self.table[extension.lower()])
                 if lower:
+                    if not os.path.exists(self.table[extension.lower()]):
+                        os.makedirs(self.table[extension.lower()])
                     shutil.move(src, dstl)
                     moved.append((src,dstl))
                     print "Sweeping from " +src+" to "+dstl
                 elif upper:
+                    if not os.path.exists(self.table[extension.upper()]):
+                        os.makedirs(self.table[extension.upper()])
                     shutil.move(src, dstu)
                     moved.append((src,dstu))
                     print "Sweeping from " +src+" to  "+ dstu
