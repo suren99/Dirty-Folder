@@ -115,8 +115,7 @@ if __name__ == '__main__':
         fp.close()
         for cnt,line in enumerate(lines):
             print str(cnt + 1)+". "+line
-        choices = raw_input("Input the indices separated by commas to delete").split(",")
-        print choices
+        choices = raw_input("Input the indices separated by commas to delete: ").split(",")
         fp = open("map.txt", "w")
         for cnt, line in enumerate(lines):
             if str(cnt + 1) not in choices:
@@ -142,15 +141,3 @@ if __name__ == '__main__':
             fp.write(each[0]+"$$$"+each[1]+"\n")
         fp.close()
         print "Done"
-    
-
-
-
-
-                    
-
-
-
-
-
-        
