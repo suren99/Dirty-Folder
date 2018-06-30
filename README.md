@@ -1,6 +1,6 @@
 # Sweeper
 My Downloads folder always looks bad :confused: . I always think what if we have something which organizes everything :smiley:.<br>
-<strong> Sweeper </strong> You Beauty <3. It organises files according to the <strong>file format</strong> mentioned in the file name.
+<strong> Sweeper </strong> You Beauty :heart: . It organises files according to the <strong>file format</strong> mentioned in the file name.
 Suppose if you have .mp3 files in the downloads folder which you think should be in ~/Songs folder, then <strong> Sweeper </strong>
 is what exactly you need<br><br>
 All you should do is to run<br>
